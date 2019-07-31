@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block body %}
+<div class="canvas"></div>
+<div id="result">Waiting for player...</div>
+<br />
+<br />
+
+{% if gameExists %}
+<p class="gameId">
+  Game ID: <b id="gameId">{{ gameId }}</b
+  ><br />
+  <b id="waiting">Waiting for player...</b>
+</p>
+{% else %}
+<b class="gameId">Game does not exist</b>
+{% endif %}
+
+<table class="table table-bordered gameBoard" style="display: none">
+  <tbody>
+    <tr>
+      <td id="a1"></td>
+      <td id="a2"></td>
+      <td id="a3"></td>
+    </tr>
+
+    <tr>
+      <td id="b1"></td>
+      <td id="b2"></td>
+      <td id="b3"></td>
+    </tr>
+
+    <tr>
+      <td id="c1"></td>
+      <td id="c2"></td>
+      <td id="c3"></td>
+    </tr>
+  </tbody>
+</table>
+{% endblock body %}

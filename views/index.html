@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block title %}Tic Tac Toe{% endblock title %} {%
+block body %}
+<div class="main">
+  <h1>Welcome to Tic Tac Toe!</h1>
+  What would you like to do?
+  <select id="chooseAction">
+    <option value="0" selected>Co-operative</option>
+    <option value="1">Create multiplayer game</option>
+    <option value="2">Join multiplayer game</option>
+  </select>
+
+  <div id="selectionContent">
+    <button id="go">Go!</button>
+  </div>
+</div>
+
+{% endblock body %}
