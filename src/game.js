@@ -61,7 +61,7 @@ const updatePosition = (socket, requestId, gameId, player, position) => {
       return;
     }
 
-    game.positions
+    game.positions[player]
   }
 }
 

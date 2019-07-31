@@ -1,12 +1,12 @@
-const HOST = '192.168.1.7';
+const HOST = 'localhost'
 const PORT = 3000;
 
-let socket;
-let requests = [];
-let currentGameId;
+let client;
+const gameManager = new GameManager('.main', 'table');
+let gameType;
 
 $(document).ready(function() {
-  $('#chooseAction').val('0');
+  $('#chooseAction').val('1');
 });
 
 $('#chooseAction').on('change', function() {
@@ -16,7 +16,7 @@ $('#chooseAction').on('change', function() {
 const renderContent = option => {
   $('#selectionContent').empty();
 
-  let html = (option == 2) ? 'Game ID: <input type="text" id="gameId" />' : '';
+  let html = (option == 2) ? 'Game ID: <input type="text" id="gameId" value="1" />' : '';
   html += '<button id="go">Go!</button>';
 
   $('#selectionContent').html(html);
@@ -24,94 +24,25 @@ const renderContent = option => {
 
 $(document).on('click', '#go', async function() {
   const option = $('#chooseAction').val();
-  let message;
+  gameType = option;
 
-  switch (option) {
-    case '0':
-      document.location.href = '/game';
-      break;
-    case '1':
-        message = { action: 'createGame', callback: startGame };
-        break;
-    case '2':
-      message = { action: 'joinGame', gameId: $('#gameId').val(), callback: joinGame };
-      break;
-  }
-
-  if (option == 1 || option == 2) {
-    socket = await createSocket(HOST, PORT);
-    sendMessage(message);
-  }
+  if (option == 0)
+    document.location.href = '/game';
+  else if (option == 1 || option == 2) 
+    client = new WebSocketClient(HOST, PORT, connectionMade);
 });
 
-const createSocket = async (host, port) => {
-  socket = new WebSocket(`ws://${host}:${port}`);
-  socket.onmessage = messageReceived;
+const connectionMade = () => {
+  const option = $('#chooseAction').val();
 
-  return new Promise((resolve, reject) => {
-    setTimeout(
-      () => socket.readyState === 1 ? resolve(socket) : reject({}), 1000
-    )
-  });
+  if (option == 1) client.createGame(gameCreated);
+  else if (option == 2) client.joinGame($('#gameId').val(), gameJoined); 
 }
 
-const sendMessage = message => {
-  const requestId = requests.length || 1
-  const request = { requestId, callback: message.callback }
-  requests.push(request);
-  message.requestId = requestId;
-
-  socket.send(JSON.stringify(message));
+const gameCreated = response => {
+  gameManager.loadGame(response.data.gameId, false);
 }
 
-const messageReceived = message => {
-  const messageObject = JSON.parse(message.data);
-  const request = requests.find(req => req.requestId === messageObject.requestId);
-
-  if (request !== undefined) {
-    if (request.requestId === messageObject.requestId &&
-      typeof request.callback === 'function') {
-        request.callback(messageObject);
-    }
-  } else {
-    if (messageObject.requestId === 0) {
-      renderGame(messageObject);
-    } else {
-      alert(messageObject.data);
-      console.log(messageObject);
-    }
-  }
-
-  currentGameId = messageObject.gameId;
-}
-
-const startGame = response => {
-  $('.main').empty();
-
-  $.get(`/game?id=${response.data.gameId}`, function(data) {
-    $('.main').html(data);
-  });
-  renderGame(response);
-}
-
-const joinGame = response => {
-  $('.main').empty();
-
-  $.get(`/game?id=${response.data.gameId}`, function(data) {
-    $('.main').html(data);
-    $('#waiting').hide();
-    $('table').show();
-  });
-}
-
-const renderGame = response => {
-  if (response.data.hasStarted) {
-    $.get(`/game?id=${response.data.gameId}`, function(data) {
-      $('.main').html(data);
-      $('#waiting').hide();
-      $('table').show();
-    });
-  }
-
-  console.log('re-rendering...');
+const gameJoined = response => {
+  gameManager.loadGame(response.data.gameId, true);
 }

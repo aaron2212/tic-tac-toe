@@ -17,7 +17,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    {% block scripts %}
+    <script src="js/gameManager.js"></script>
+    <script src="js/webSocketClient.js"></script>
     <script src="js/main.js"></script>
     <script src="js/game.js"></script>
+    {% endblock scripts %}
   </body>
 </html>

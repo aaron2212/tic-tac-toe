@@ -40,7 +40,7 @@ webSocketServer.on('connection', ws => {
           game.join(ws, requestId, gameId);
           break;
         case 'updatePosition':
-          game
+          break;
         default:
           game.sendResponse(ws, requestId, false, 'Invalid request')
           break;
